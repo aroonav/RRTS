@@ -226,7 +226,7 @@ int supervisor::repair_scheduler()
 	fin.close();
 
 	fout.open(DATAPATH, ios::out);
-	cout<<"Data format: <Request ID> <Location> <Start Point> <End Point> <Name> <Address> <Contact> <ID Numbe> <Priority> <Required Raw Materials> <Required Machines> <Required Personnels>";
+	cout<<"\nData format: <Request ID> <Location> <Start Point> <End Point> <Name> <Address> <Contact> <ID Numbe> <Priority> <Required Raw Materials> <Required Machines> <Required Personnels>"<<endl<<endl;
 	for(j=0; j<activeRequests; j++)
 	{
 		// Write sorted repair requests to file
@@ -246,18 +246,39 @@ int supervisor::repair_scheduler()
 	return 0;
 }
 
-class mayor
-{
-public:
-	mayor();
-	~mayor();	
-};
-
 class administrator
 {
 public:
-	administrator();
-	~administrator();
+	int enterAvailableResources(string manpower, string machines);
+	int showAvailableResources();
+};
+int administrator::enterAvailableResources(string manpower, string machines)
+{
+	fstream fout;
+	fout.open(RESOURCESPATH, ios::out);
+	fout<<manpower<<endl;
+	fout<<machines<<endl;
+	fout.close();
+	cout<<"Available resources updated successfully !!"<<endl;
+	supervisor s;
+	cout<<"Now scheduling road repairs..."<<endl;
+	return s.repair_scheduler();
+}
+int administrator::showAvailableResources()
+{
+	string manpower, machines;
+	fstream fin;
+	fin.open(RESOURCESPATH, ios::in);
+	fin>>manpower;
+	fin>>machines;
+	cout<<"Available manpower:"<<manpower<<endl;
+	cout<<"Available machines:"<<machines<<endl;
+	fin.close();
+}
+
+class mayor
+{
+public:
 };
 
 
@@ -339,7 +360,16 @@ int supervisor_driver()
 }
 int administrator_driver()
 {
-	;
+	string manpower, machines;
+	cout<<"\nAdministrator"<<endl;
+	cout<<"-------------"<<endl;
+	cout<<"Enter information about the available resources:"<<endl;
+	administrator a;
+	cout<<"Enter available manpower with the system."<<endl;
+	getline(cin, manpower);
+	cout<<"Enter available machines with the system."<<endl;
+	getline(cin, machines);
+	return a.enterAvailableResources(manpower, machines);
 }
 int mayor_driver()
 {
@@ -360,6 +390,7 @@ int mainInterface()
 		cout<<"1. Resident"<<endl;
 		cout<<"2. Clerk"<<endl;
 		cout<<"3. Supervisor"<<endl;
+		cout<<"4. Administrator"<<endl;
 		cout<<"6. Exit"<<endl;
 		cin>>option;scanf("%*c");
 
