@@ -1,7 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#define DATAPATH "data.txt"
+#include <sstream>
+#include <cstdio>
+
+#define TEMPDATAPATH "data/temp.txt"
+#define DATAPATH "data/data.txt"
+#define REQUESTIDPATH "data/requestID.txt"
+#define RESOURCESPATH "data/resources.txt"
+#define ACTIVEREQUESTSPATH "data/activeRequests.txt"
 
 using namespace std;
 
@@ -26,10 +33,33 @@ public:
 	}
 	int request_raiser(string location, string startPoint, string endPoint)
 	{
-		ofstream fout;fout.open(DATAPATH, std::ios_base::app);
+		ofstream fout;ifstream fin;
+		int requestID = -1;
+		int activeRequests = -1;
+		int priority = -1;					// Default priority of repair request. Denotes that the priority hasn't been set yet.
+		string rawMaterials;
+		string machinesRequired;
+		string personnelRequired;
+
+		fin.open(REQUESTIDPATH, ios::in);
+		fin>>requestID;						// Retrieves last request ID from file.
+		fin.close();
+		fout.open(REQUESTIDPATH, ios::out);
+		fout<<requestID+1;					// Updates request ID by incrementing the old value.
+		fout.close();
+
+		fin.open(ACTIVEREQUESTSPATH, ios::in);
+		fin>>activeRequests;						// Retrieves last request ID from file.
+		fin.close();
+		fout.open(ACTIVEREQUESTSPATH, ios::out);
+		fout<<activeRequests+1;					// Updates request ID by incrementing the old value.
+		fout.close();
+
+		fout.open(DATAPATH, std::ios_base::app);
 		if (fout.is_open())
-		{	fout<<location<<","<<startPoint<<","<<endPoint<<","<<residentName<<","<<address<<","<<contact<<","<<IDNumber<<endl;
+		{	fout<<requestID+1<<","<<location<<","<<startPoint<<","<<endPoint<<","<<residentName<<","<<address<<","<<contact<<","<<IDNumber<<","<<priority<<","<<rawMaterials<<","<<machinesRequired<<","<<personnelRequired<<endl;
 			fout.close();
+			cout<<"Request ID:"<<requestID+1<<endl;
 			return 0;
 		}
 		else
@@ -52,15 +82,37 @@ public:
 	}
 	int request_raiser(string location, string startPoint, string endPoint)
 	{
-		ofstream fout;
+		ofstream fout;ifstream fin;
+		int requestID = -1;
+		int activeRequests = -1;
+		int priority = -1;					// Default priority of repair request. Denotes that the priority hasn't been set yet.
+		string rawMaterials;
+		string machinesRequired;
+		string personnelRequired;
+
+		fin.open(REQUESTIDPATH, ios::in);
+		fin>>requestID;						// Retrieves last request ID from file.
+		fin.close();
+		fout.open(REQUESTIDPATH, ios::out);
+		fout<<requestID+1;					// Updates request ID by incrementing the old value.
+		fout.close();
+
+		fin.open(ACTIVEREQUESTSPATH, ios::in);
+		fin>>activeRequests;						// Retrieves last request ID from file.
+		fin.close();
+		fout.open(ACTIVEREQUESTSPATH, ios::out);
+		fout<<activeRequests+1;					// Updates request ID by incrementing the old value.
+		fout.close();
+
 		fout.open(DATAPATH, std::ios_base::app);
 		if (fout.is_open())
-		{	fout<<location<<","<<startPoint<<","<<endPoint<<","<<requester->residentName<<","<<requester->address<<","<<requester->contact<<","<<requester->IDNumber<<endl;
+		{	fout<<requestID+1<<","<<location<<","<<startPoint<<","<<endPoint<<","<<requester->residentName<<","<<requester->address<<","<<requester->contact<<","<<requester->IDNumber<<","<<priority<<","<<rawMaterials<<","<<machinesRequired<<","<<personnelRequired<<endl;
 			fout.close();
+			cout<<"Request ID:"<<requestID+1<<endl;
 			return 0;
 		}
 		else
-		{	cout<<"Error opening file while raising request by clerk.";
+		{	cout<<"Error opening file while raising request by resident.";
 			return 1;
 		}
 	}
@@ -68,16 +120,90 @@ public:
 
 class supervisor
 {
-private:
-	void enter_priority(int priority);
-	void enter_raw_materials();
-	void enter_machines();
-	void enter_personnels();
 public:
-	supervisor();
-	int enter_information();
+	int enter_information(int requestID, int newPriority, string newRawMaterials, string newMachinesRequired, string newPersonnelRequired);
 	int repair_scheduler();
 };
+
+int supervisor::enter_information(int requestID, int newPriority, string newRawMaterials, string newMachinesRequired, string newPersonnelRequired)
+{
+	string str;
+
+	fstream fin, fout;
+	fin.open(DATAPATH, ios::in);
+	fout.open(TEMPDATAPATH, ios::out);
+
+	if(fout.is_open())
+	{
+		while(getline(fin, str))
+		{
+			istringstream in(str);
+			char tempStr[128];
+			string temp[12];
+			for (int i = 0; i < 12; i++)
+			{
+				in.getline(tempStr, 128, ',');
+				temp[i] = tempStr;		// temp[] contains the 12 pieces of information that was stored in the CSV file
+			}
+
+			if(requestID == stoi(temp[0]))
+			{
+				for (int i = 0; i <= 7; i++)
+					fout<<temp[i]<<",";
+				fout<<newPriority<<","<<newRawMaterials<<","<<newMachinesRequired<<","<<newPersonnelRequired;
+			}
+			else
+			{
+				for (int i = 0; i < 12; i++)
+					fout<<temp[i]<<",";
+			}
+			fout<<endl;
+		}
+		// Rename temp.txt to data.txt now.
+		rename(TEMPDATAPATH, DATAPATH);
+		remove(TEMPDATAPATH);
+		cout<<"Values updated successfully !!"<<endl;
+	}
+	else
+	{	cout<<"Error opening file while updating information by supervisor."<<endl;
+		return 1;
+	}
+	fin.close();
+	fout.close();
+	return 0;
+}
+
+int supervisor::repair_scheduler()
+{
+	// string str;
+
+	// fstream fin, fout;
+	// fin.open(DATAPATH, ios::in);
+	// fout.open(TEMPDATAPATH, ios::out);
+
+	// if(fout.is_open())
+	// {
+	// 	while(getline(fin, str))
+	// 	{
+	// 		for (int i = 0; i < 12; i++)
+	// 		{
+	// 			cin.getline(tempStr, 128, ',');
+	// 			temp[i] = tempStr;		// temp[] contains the 12 pieces of information that was stored in the CSV file
+	// 		}
+	// 	}
+	// 	// Rename temp.txt to data.txt now.
+	// 	rename(TEMPDATAPATH, DATAPATH);
+	// 	remove(TEMPDATAPATH);
+	// 	cout<<"Values updated successfully !!"<<endl;
+	// }
+	// else
+	// {	cout<<"Error opening file while updating information by supervisor."<<endl;
+	// 	return 1;
+	// }
+	// fin.close();
+	// fout.close();
+	// return 0;
+}
 
 class mayor
 {
@@ -136,9 +262,39 @@ int clerk_driver()
 }
 int supervisor_driver()
 {
+	int requestID;
+	int newPriority;
+	int option = -1;
+	string newRawMaterials;
+	string newMachinesRequired;
+	string newPersonnelRequired;
+	supervisor s;
+
 	cout<<"\nSupervisor"<<endl;
 	cout<<"----------"<<endl;
-	cout<<"";
+	cout<<"1. Enter information about a road repair request.\n2. Schedule road repair work\n";
+	cin>>option;
+	if(option==1)
+	{
+		//TODO: Check that these values don't contain commas.
+		cout<<"\nNow entering information about road repair request..."<<endl;
+		cout<<"Enter request ID whose values have to be updated:";
+		scanf("%d%*c", &requestID);
+		cout<<"Enter new priority(1-100):";
+		scanf("%d%*c", &newPriority);
+		cout<<"Enter new raw materials:";
+		getline(cin, newRawMaterials);
+		cout<<"Enter new machines required:";
+		getline(cin, newMachinesRequired);
+		cout<<"Enter new personnel required:";
+		getline(cin, newPersonnelRequired);
+		return s.enter_information(requestID, newPriority, newRawMaterials, newMachinesRequired, newPersonnelRequired);
+	}
+	else
+	{
+		cout<<"Now scheduling road repairs...";
+		return s.repair_scheduler();
+	}
 }
 int administrator_driver()
 {
@@ -153,13 +309,16 @@ int mayor_driver()
 int mainInterface()
 {
 	cout<<"---------------------------"<<endl;
+	cout<<"---------------------------"<<endl;
 	cout<<"Road Repair Tracking System"<<endl;
+	cout<<"---------------------------"<<endl;
 	cout<<"---------------------------"<<endl;
 	int option = -1;
 	do
 	{	cout<<"Please choose your identity:"<<endl;
 		cout<<"1. Resident"<<endl;
 		cout<<"2. Clerk"<<endl;
+		cout<<"3. Supervisor"<<endl;
 		cout<<"6. Exit"<<endl;
 		cin>>option;scanf("%*c");
 
@@ -172,7 +331,8 @@ int mainInterface()
 		else if(option==3)		return supervisor_driver();		// Supervisor
 		else if(option==4)		return administrator_driver();	// Administrator
 		else if(option==5)		return mayor_driver();			// Mayor
-	}while(option!=6);
+	} while(option!=6);
+
 	return 0;
 }
 

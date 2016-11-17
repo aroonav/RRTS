@@ -1,3 +1,3 @@
 all: rrts.cpp
-	g++ rrts.cpp -o rrts
+	g++ -std=c++11 rrts.cpp -o rrts
 	@echo "Run ./rrts to execute program."
