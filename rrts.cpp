@@ -9,6 +9,7 @@
 #define REQUESTIDPATH "data/requestID.txt"
 #define RESOURCESPATH "data/resources.txt"
 #define ACTIVEREQUESTSPATH "data/activeRequests.txt"
+#define STATISTICSPATH "data/statistics.txt"
 
 using namespace std;
 
@@ -123,6 +124,7 @@ class supervisor
 public:
 	int enter_information(int requestID, int newPriority, string newRawMaterials, string newMachinesRequired, string newPersonnelRequired);
 	int repair_scheduler();
+	int enter_statistics();
 };
 
 int supervisor::enter_information(int requestID, int newPriority, string newRawMaterials, string newMachinesRequired, string newPersonnelRequired)
@@ -245,6 +247,31 @@ int supervisor::repair_scheduler()
 	fout.close();
 	return 0;
 }
+int supervisor::enter_statistics()
+{
+	string repairOverTime;
+	string repairOutstanding;
+	string repairUtilization;
+	fstream fout;
+	fout.open(STATISTICSPATH, ios::out);
+	scanf("%*c");
+
+	cout<<"Enter repair work over time:";
+	getline(cin, repairOverTime);
+	fout<<repairOverTime<<endl;
+
+	cout<<"Enter repair work outstanding:";
+	getline(cin, repairOutstanding);
+	fout<<repairOutstanding<<endl;
+
+	cout<<"Enter repair utilization:";
+	getline(cin, repairUtilization);
+	fout<<repairUtilization<<endl;
+
+	fout.close();
+	cout<<"Values updated successfully";
+	return 0;
+}
 
 class administrator
 {
@@ -274,13 +301,31 @@ int administrator::showAvailableResources()
 	cout<<"Available manpower:"<<manpower<<endl;
 	cout<<"Available machines:"<<machines<<endl;
 	fin.close();
+	return 0;
 }
 
 class mayor
 {
 public:
+	int query_repair_statistics();
 };
 
+int mayor::query_repair_statistics()
+{
+	string repairOverTime;
+	string repairOutstanding;
+	string repairUtilization;
+	fstream fin;
+	fin.open(STATISTICSPATH, ios::in);
+	fin>>repairOverTime;
+	fin>>repairOutstanding;
+	fin>>repairUtilization;
+	cout<<"Repair work over time:"<<repairOverTime;
+	cout<<"Repair work outstanding:"<<repairOutstanding;
+	cout<<"Repair utilization:"<<repairUtilization;
+	fin.close();
+	return 0;
+}
 
 int resident_driver()
 {
@@ -334,7 +379,7 @@ int supervisor_driver()
 
 	cout<<"\nSupervisor"<<endl;
 	cout<<"----------"<<endl;
-	cout<<"1. Enter information about a road repair request.\n2. Schedule road repair work\n";
+	cout<<"1. Enter information about a road repair request.\n2. Schedule road repair work\n3. Enter Statistics\n";
 	cin>>option;
 	if(option==1)
 	{
@@ -352,10 +397,14 @@ int supervisor_driver()
 		getline(cin, newPersonnelRequired);
 		return s.enter_information(requestID, newPriority, newRawMaterials, newMachinesRequired, newPersonnelRequired);
 	}
-	else
+	else if(option==2)
 	{
 		cout<<"Now scheduling road repairs..."<<endl;
 		return s.repair_scheduler();
+	}
+	else if(option==3)
+	{
+		return s.enter_statistics();
 	}
 }
 int administrator_driver()
@@ -391,6 +440,7 @@ int mainInterface()
 		cout<<"2. Clerk"<<endl;
 		cout<<"3. Supervisor"<<endl;
 		cout<<"4. Administrator"<<endl;
+		cout<<"5. Mayor"<<endl;
 		cout<<"6. Exit"<<endl;
 		cin>>option;scanf("%*c");
 
