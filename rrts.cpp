@@ -26,15 +26,14 @@ public:
 	}
 	int request_raiser(string location, string startPoint, string endPoint)
 	{
-		ofstream fout;
-		fout.open(DATAPATH, std::ios_base::app);
+		ofstream fout;fout.open(DATAPATH, std::ios_base::app);
 		if (fout.is_open())
 		{	fout<<location<<","<<startPoint<<","<<endPoint<<","<<residentName<<","<<address<<","<<contact<<","<<IDNumber<<endl;
 			fout.close();
 			return 0;
 		}
 		else
-		{	cout<<"Error opening file";
+		{	cout<<"Error opening file while raising request by resident.";
 			return 1;
 		}
 	}
@@ -42,12 +41,28 @@ public:
 
 class clerk
 {
+	resident* requester;
 public:
-	clerk();
-	~clerk();
-	int request_raiser(string location, string startPoint, string endPoint, string residentName, string address, string contact, string IDNumber)
+	clerk()
+	{	requester = NULL;
+	}
+	clerk(string requesterName, string requesterAddress, string requesterContact, string requesterIDNumber)
 	{
-		;
+		requester = new resident(requesterName, requesterAddress, requesterContact, requesterIDNumber);
+	}
+	int request_raiser(string location, string startPoint, string endPoint)
+	{
+		ofstream fout;
+		fout.open(DATAPATH, std::ios_base::app);
+		if (fout.is_open())
+		{	fout<<location<<","<<startPoint<<","<<endPoint<<","<<requester->residentName<<","<<requester->address<<","<<requester->contact<<","<<requester->IDNumber<<endl;
+			fout.close();
+			return 0;
+		}
+		else
+		{	cout<<"Error opening file while raising request by clerk.";
+			return 1;
+		}
 	}
 };
 
@@ -60,7 +75,6 @@ private:
 	void enter_personnels();
 public:
 	supervisor();
-	~supervisor();
 	int enter_information();
 	int repair_scheduler();
 };
@@ -83,7 +97,6 @@ public:
 int resident_driver()
 {
 	string location, startPoint, endPoint, residentName, address, contact, IDNumber;
-	scanf("%*c");
 	cout<<"\nRaise request for road repair by resident."<<endl;
 	cout<<"Enter Location:";			getline(cin, location);
 	cout<<"Enter start point of road:";	getline(cin, startPoint);
@@ -95,12 +108,47 @@ int resident_driver()
 
 	resident r(residentName, address, contact, IDNumber);
 	if( r.request_raiser(location, startPoint, endPoint) == 0)
-	{	cout<<"Request Raised successfully !!"<<endl;
+	{	cout<<"Request Raised successfully by resident !!"<<endl;
 		return 0;
 	}
 	else
 		return 1;
 }
+int clerk_driver()
+{
+	string location, startPoint, endPoint, requesterName, requesterAddress, requesterContact, requesterIDNumber;
+	cout<<"\nRaise request for road repair by clerk."<<endl;
+	cout<<"Enter Location:";					getline(cin, location);
+	cout<<"Enter start point of road:";			getline(cin, startPoint);
+	cout<<"Enter end point of road:";			getline(cin, endPoint);
+	cout<<"Enter resident's name:";				getline(cin, requesterName);
+	cout<<"Enter resident's address:";			getline(cin, requesterAddress);
+	cout<<"Enter resident's contact number:";	getline(cin, requesterContact);
+	cout<<"Enter resident's IDNumber:";			getline(cin, requesterIDNumber);
+
+	clerk r(requesterName, requesterAddress, requesterContact, requesterIDNumber);
+	if( r.request_raiser(location, startPoint, endPoint) == 0)
+	{	cout<<"Request Raised successfully by clerk !!"<<endl;
+		return 0;
+	}
+	else
+		return 1;
+}
+int supervisor_driver()
+{
+	cout<<"\nSupervisor"<<endl;
+	cout<<"----------"<<endl;
+	cout<<"";
+}
+int administrator_driver()
+{
+	;
+}
+int mayor_driver()
+{
+	;
+}
+
 
 int mainInterface()
 {
@@ -111,15 +159,19 @@ int mainInterface()
 	do
 	{	cout<<"Please choose your identity:"<<endl;
 		cout<<"1. Resident"<<endl;
+		cout<<"2. Clerk"<<endl;
 		cout<<"6. Exit"<<endl;
-		cin>>option;
+		cin>>option;scanf("%*c");
 
 		if(option<0 || option>6)
 		{	cout<<"Please choose correctly.";
 			continue;
 		}
-		else if(option==1)		// Resident
-			return resident_driver();
+		else if(option==1)		return resident_driver();		// Resident
+		else if(option==2)		return clerk_driver();			// Clerk
+		else if(option==3)		return supervisor_driver();		// Supervisor
+		else if(option==4)		return administrator_driver();	// Administrator
+		else if(option==5)		return mayor_driver();			// Mayor
 	}while(option!=6);
 	return 0;
 }
