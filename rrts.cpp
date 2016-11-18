@@ -320,9 +320,9 @@ int mayor::query_repair_statistics()
 	fin>>repairOverTime;
 	fin>>repairOutstanding;
 	fin>>repairUtilization;
-	cout<<"Repair work over time:"<<repairOverTime;
-	cout<<"Repair work outstanding:"<<repairOutstanding;
-	cout<<"Repair utilization:"<<repairUtilization;
+	cout<<"Repair work over time:"<<repairOverTime<<endl;
+	cout<<"Repair work outstanding:"<<repairOutstanding<<endl;
+	cout<<"Repair utilization:"<<repairUtilization<<endl;
 	fin.close();
 	return 0;
 }
@@ -422,7 +422,11 @@ int administrator_driver()
 }
 int mayor_driver()
 {
-	;
+	mayor m;
+	cout<<"Mayor"<<endl;
+	cout<<"-----"<<endl;
+	cout<<"Query Repair Statistics."<<endl;
+	m.query_repair_statistics();
 }
 
 

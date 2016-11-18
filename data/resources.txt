@@ -1,2 +1,2 @@
-sfd
-xffd
+100 men 10 supervisors
+1000 cranes 100 shovels
