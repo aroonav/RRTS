@@ -1,0 +1,8 @@
+3,bhilai,A market,B Market,Arindam,bhilai 10th sector,8563259856,b07,1,10 cement packets,5 cranes,23 men,
+1,bhubaneswar,12th avenue,5th avenue,aroonav,iiit bbsr,9641378541,b08,25,10 shovel 1 crane,1 crane,50 men,
+5,gothapatna,nuagaon,sum hospital,sai,kalinga vihar,987456321,b34,41,nil,4 crane,3 men
+4,delhi,rashtrapati bhawan,india gate,pranab mukherjee,rashtrapati bhawan,9852365745,1,47,36 cement packs,3 cranes,21 men,
+2,cuttack,all roads,all roads,goutam,cuttack,911,b16,98,100 cement packs,50 cranes,100 men,
+6,calcutta,victoria memorial,science park,Arnab,Kolkata,852364179,B99,-1,,,
+7,chennai,5th avenue,6th avenue,Aroonav,IIIT BBSR,7785412635,B08,-1,,,
+8,timbuktu,bombay,delhi,rajni,connaught place,100,1,-1,,,
