@@ -269,7 +269,7 @@ int supervisor::enter_statistics()
 	fout<<repairUtilization<<endl;
 
 	fout.close();
-	cout<<"Values updated successfully";
+	cout<<"Values updated successfully by supervisor!!"<<endl;
 	return 0;
 }
 
